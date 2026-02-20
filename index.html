@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ایستگاه بازی</title>
+    <style>
+        body { background: #0d1117; color: white; font-family: sans-serif; margin: 0; text-align: center; }
+        .header { padding: 20px; background: #161b22; border-bottom: 2px solid #00d2ff; position: sticky; top: 0; z-index: 10; }
+        .search { padding: 10px; width: 80%; max-width: 400px; border-radius: 20px; border: 1px solid #30363d; background: #0d1117; color: white; outline: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: #161b22; border-radius: 10px; overflow: hidden; border: 1px solid #30363d; text-decoration: none; display: flex; flex-direction: column; transition: 0.3s; }
+        .card:hover { transform: scale(1.05); border-color: #00d2ff; }
+        .card img { width: 100%; height: 100px; object-fit: cover; }
+        .title { padding: 8px; font-size: 11px; font-weight: bold; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <input type="text" id="search" class="search" placeholder="جستجو در ۳۵۷ بازی...">
+    </div>
+    <div class="grid" id="container">در حال بارگذاری...</div>
+    <script>
+        const repoUrl = 'https://api.github.com/repos/Kamin7/games/contents/';
+        async function load() {
+            try {
+                const res = await fetch(repoUrl);
+                const data = await res.json();
+                const folders = data.filter(i => i.type === 'dir' && !i.name.startsWith('.'));
+                const container = document.getElementById('container');
+                container.innerHTML = '';
+                folders.forEach(f => {
+                    const card = document.createElement('a');
+                    card.className = 'card';
+                    card.href = `./${f.name}/index.html`;
+                    card.innerHTML = `
+                        <img src="./${f.name}/thumbnail.png" onerror="this.src='https://placehold.co/200x150/161b22/00d2ff?text=${f.name}'">
+                        <div class="title">${f.name.replace(/-/g, ' ').toUpperCase()}</div>
+                    `;
+                    container.appendChild(card);
+                });
+                document.getElementById('search').addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    document.querySelectorAll('.card').forEach(c => {
+                        c.style.display = c.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
+                    });
+                });
+            } catch (e) { container.innerText = 'خطا در بارگذاری'; }
+        }
+        load();
+    </script>
+</body>
+</html>

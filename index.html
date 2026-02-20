@@ -3,37 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamer Platform</title>
+    <title>Gamer Platform | ۳۵۷ بازی</title>
     <style>
         :root { --primary: #7000ff; --bg: #05070a; --surface: #10141d; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
-        nav { padding: 20px 50px; background: var(--surface); display: flex; justify-content: space-between; border-bottom: 1px solid #ffffff11; }
-        .hero { height: 300px; background: linear-gradient(to bottom, transparent, var(--bg)), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1350&q=80'); background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        nav { padding: 15px 40px; background: var(--surface); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff11; position: sticky; top: 0; z-index: 100; }
+        .hero { height: 250px; background: linear-gradient(to bottom, transparent, var(--bg)), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1000'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
         .search-container { margin-top: -25px; text-align: center; }
-        .search-box { width: 80%; max-width: 500px; padding: 15px 25px; border-radius: 30px; border: 2px solid var(--primary); background: var(--surface); color: white; outline: none; box-shadow: 0 10px 20px rgba(112,0,255,0.2); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 40px; }
+        .search-box { width: 85%; max-width: 500px; padding: 15px 25px; border-radius: 30px; border: 2px solid var(--primary); background: var(--surface); color: white; outline: none; box-shadow: 0 10px 20px rgba(112,0,255,0.2); font-size: 16px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; padding: 40px; }
         .game-card { background: var(--surface); border-radius: 15px; overflow: hidden; text-decoration: none; border: 1px solid #ffffff05; transition: 0.3s; display: flex; flex-direction: column; }
-        .game-card:hover { transform: translateY(-10px); border-color: var(--primary); }
-        .image-wrapper { width: 100%; height: 120px; background: #1a1f2b; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .game-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .image-wrapper { width: 100%; height: 130px; position: relative; display: flex; align-items: center; justify-content: center; background: #1a1f2b; }
         .game-card img { width: 100%; height: 100%; object-fit: cover; }
-        .no-img { font-size: 40px; font-weight: bold; color: var(--primary); opacity: 0.5; }
-        .info { padding: 12px; text-align: center; font-size: 13px; font-weight: bold; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .no-img { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold; text-shadow: 0 0 15px currentColor; }
+        .info { padding: 12px; text-align: center; font-size: 12px; font-weight: bold; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     </style>
 </head>
 <body>
     <nav>
-        <div style="font-size: 22px; font-weight: bold; color: var(--primary);">GAMER HUB</div>
-        <div>۳۵۷ بازی</div>
+        <div style="font-size: 22px; font-weight: bold; color: #00d2ff;">GAMER HUB</div>
+        <div style="font-size: 14px; color: #888;">۳۵۷ بازی آماده اجرا</div>
     </nav>
     <div class="hero">
-        <h1 style="font-size: 40px; margin: 0;">پلتفرم بازی‌های آنلاین</h1>
+        <h1 style="font-size: 35px; text-shadow: 0 0 20px rgba(0,0,0,0.8);">پلتفرم بازی‌های آنلاین</h1>
     </div>
     <div class="search-container">
-        <input type="text" id="search" class="search-box" placeholder="جستجو در بین ۳۵۷ بازی...">
+        <input type="text" id="search" class="search-box" placeholder="جستجو بین ۳۵۷ بازی...">
     </div>
-    <div class="grid" id="container">در حال بارگذاری...</div>
+    <div class="grid" id="container"></div>
+
     <script>
         const repoUrl = 'https://api.github.com/repos/Kamin7/games/contents/';
+        const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#3742fa', '#00d2ff', '#7000ff', '#e84393'];
+
         async function load() {
             try {
                 const res = await fetch(repoUrl);
@@ -41,26 +44,33 @@
                 const folders = data.filter(i => i.type === 'dir' && !i.name.startsWith('.'));
                 const container = document.getElementById('container');
                 container.innerHTML = '';
-                folders.forEach(f => {
+
+                folders.forEach((f, index) => {
                     const card = document.createElement('a');
                     card.className = 'game-card';
                     card.href = `./${f.name}/index.html`;
                     const name = f.name.replace(/-/g, ' ').toUpperCase();
+                    const color = colors[index % colors.length];
+
                     card.innerHTML = `
                         <div class="image-wrapper">
-                            <img src="./${f.name}/thumbnail.png" onerror="this.outerHTML='<div class=\'no-img\'>${name[0]}</div>'">
+                            <img src="./${f.name}/thumbnail.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="no-img" style="display:none; background: linear-gradient(135deg, ${color}44, #10141d); color: ${color};">
+                                ${name[0]}
+                            </div>
                         </div>
                         <div class="info">${name}</div>
                     `;
                     container.appendChild(card);
                 });
+
                 document.getElementById('search').addEventListener('input', (e) => {
                     const term = e.target.value.toLowerCase();
                     document.querySelectorAll('.game-card').forEach(c => {
                         c.style.display = c.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
                     });
                 });
-            } catch (e) { document.getElementById('container').innerText = 'خطا در بارگذاری'; }
+            } catch (e) { document.getElementById('container').innerText = 'خطا در بارگذاری پلتفرم.'; }
         }
         load();
     </script>
